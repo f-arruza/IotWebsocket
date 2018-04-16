@@ -21,7 +21,7 @@ thread_lock = Lock()
 # Ruta del dashboard
 @app.route('/')
 def index():
-    return render_template('index_ws.html', async_mode=socketio.async_mode)
+    return render_template('index.html', async_mode=socketio.async_mode)
 
 # Consumidor del topic de Kafka "telemetry.temperature.ml1p". Cada valor recibido se envía a través del websocket.
 def background_thread_websocket_mlp1():
