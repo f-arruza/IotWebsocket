@@ -90,6 +90,7 @@
                       <thead class="text-primary">
                         <th>Fecha</th>
                         <th>Valor</th>
+                        <th>Mensaje</th>
                       </thead>
                       <tbody id="table01">
                       </tbody>
@@ -125,6 +126,7 @@
                       <thead class="text-primary">
                         <th>Fecha</th>
                         <th>Valor</th>
+                        <th>Mensaje</th>
                       </thead>
                       <tbody id="table02">
                       </tbody>
@@ -160,6 +162,7 @@
                       <thead class="text-primary">
                         <th>Fecha</th>
                         <th>Valor</th>
+                        <th>Mensaje</th>
                       </thead>
                       <tbody id="table03">
                       </tbody>
@@ -195,6 +198,7 @@
                       <thead class="text-primary">
                         <th>Fecha</th>
                         <th>Valor</th>
+                        <th>Mensaje</th>
                       </thead>
                       <tbody id="table04">
                       </tbody>
@@ -230,6 +234,7 @@
                       <thead class="text-primary">
                         <th>Fecha</th>
                         <th>Valor</th>
+                        <th>Mensaje</th>
                       </thead>
                       <tbody id="table05">
                       </tbody>
@@ -286,33 +291,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/locale/es-us.js"></script>
 <script>
 $(document).ready(function() {
-  // var data = [287, 480, 290, 554, 690, 690, 500, 752, 650, 900, 944]
-  //  dataColouredRoundedLineChart = {
-  //      series: [
-  //          data
-  //      ]
-  //  };
-  //
-  //  optionsColouredRoundedLineChart = {
-  //      lineSmooth: Chartist.Interpolation.cardinal({
-  //          tension: 10
-  //      }),
-  //      axisY: {
-  //          showGrid: true,
-  //          offset: 40
-  //      },
-  //      axisX: {
-  //          showGrid: false,
-  //      },
-  //      low: 0,
-  //      high: 1000,
-  //      showPoint: true,
-  //      height: '300px'
-  //  };
-  //
-  //  var colouredRoundedLineChart = new Chartist.Line('#colouredRoundedLineChart', dataColouredRoundedLineChart, optionsColouredRoundedLineChart);
-  //  md.startAnimationForLineChart(colouredRoundedLineChart);
-  // colouredRoundedLineChart.update({series: [[287, 480, 290, 554, 690, 690, 500, 752, 650, 900, 944, 500]]});
+  var alerta = function(message){
+    $.notify({
+        icon: "notifications",
+        message: message
+
+    }, {
+        type: 'danger',
+        timer: 500,
+        delay: 100,
+        newest_on_top: true,
+        placement: {
+            from: 'top',
+            align: 'left'
+        }
+    });
+  }
+
   Highcharts.setOptions({
     global: {
       useUTC: false
@@ -544,7 +539,6 @@ $(document).ready(function() {
 
   socket.on('mlp1', function(msg) {
     if(msg != "Connected!!!") {
-      console.log(msg);
       var str = JSON.stringify(eval('(' + msg + ')'));
       var data = JSON.parse(str);
       var date = moment(data.time);
@@ -556,7 +550,6 @@ $(document).ready(function() {
 
   socket.on('mlp2', function(msg) {
     if(msg != "Connected!!!") {
-      console.log(msg);
       var str = JSON.stringify(eval('(' + msg + ')'));
       var data = JSON.parse(str);
       var date = moment(data.time);
@@ -568,7 +561,6 @@ $(document).ready(function() {
 
   socket.on('mlp3', function(msg) {
     if(msg != "Connected!!!") {
-      console.log(msg);
       var str = JSON.stringify(eval('(' + msg + ')'));
       var data = JSON.parse(str);
       var date = moment(data.time);
@@ -580,7 +572,6 @@ $(document).ready(function() {
 
   socket.on('mlp4', function(msg) {
     if(msg != "Connected!!!") {
-      console.log(msg);
       var str = JSON.stringify(eval('(' + msg + ')'));
       var data = JSON.parse(str);
       var date = moment(data.time);
@@ -592,11 +583,70 @@ $(document).ready(function() {
 
   socket.on('mlp5', function(msg) {
     if(msg != "Connected!!!") {
-      console.log(msg);
       var str = JSON.stringify(eval('(' + msg + ')'));
       var data = JSON.parse(str);
       var date = moment(data.time);
       $('#table05').prepend('<tr><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td></tr>');
+      var chart = $("#container05").highcharts();
+      chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
+    }
+  });
+
+  socket.on('mlp1.alarm', function(msg) {
+    if(msg != "Connected!!!") {
+      var str = JSON.stringify(eval('(' + msg + ')'));
+      var data = JSON.parse(str);
+      var date = moment(data.time);
+      $('#table01').prepend('<tr class="danger"><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td><td>' + data.message + '</td></tr>');
+      alerta("MLP1 - " + data.message);
+      var chart = $("#container01").highcharts();
+      chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
+    }
+  });
+
+  socket.on('mlp2.alarm', function(msg) {
+    if(msg != "Connected!!!") {
+      var str = JSON.stringify(eval('(' + msg + ')'));
+      var data = JSON.parse(str);
+      var date = moment(data.time);
+      $('#table02').prepend('<tr class="danger"><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td><td>' + data.message + '</td></tr>');
+      alerta("MLP2 - " + data.message);
+      var chart = $("#container02").highcharts();
+      chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
+    }
+  });
+
+  socket.on('mlp3.alarm', function(msg) {
+    if(msg != "Connected!!!") {
+      var str = JSON.stringify(eval('(' + msg + ')'));
+      var data = JSON.parse(str);
+      var date = moment(data.time);
+      $('#table03').prepend('<tr class="danger"><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td><td>' + data.message + '</td></tr>');
+      alerta("MLP3 - " + data.message);
+      var chart = $("#container03").highcharts();
+      chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
+    }
+  });
+
+  socket.on('mlp4.alarm', function(msg) {
+    if(msg != "Connected!!!") {
+      var str = JSON.stringify(eval('(' + msg + ')'));
+      var data = JSON.parse(str);
+      var date = moment(data.time);
+      $('#table04').prepend('<tr class="danger"><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td><td>' + data.message + '</td></tr>');
+      alerta("MLP4 - " + data.message);
+      var chart = $("#container04").highcharts();
+      chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
+    }
+  });
+
+  socket.on('mlp5.alarm', function(msg) {
+    if(msg != "Connected!!!") {
+      var str = JSON.stringify(eval('(' + msg + ')'));
+      var data = JSON.parse(str);
+      var date = moment(data.time);
+      $('#table05').prepend('<tr class="danger"><td>' + date.format('dddd, MMMM D - YYYY, h:mm:ss a') + '</td><td>' + data.value + '</td><td>' + data.message + '</td></tr>');
+      alerta("MLP5 - " + data.message);
       var chart = $("#container05").highcharts();
       chart.series[0].addPoint([date.valueOf(), parseInt(data.value)], true, true);
     }
